@@ -1,0 +1,37 @@
+limiter:
+  default: 1
+  vip: 5
+blockSaveLimit: 50000
+prefix: '&8[&1&lSchems&8]&7 '
+save:
+  public:
+    success: '%pre%Successfully saved publically as &1%schem%&7!'
+    exists: '%pre%&1%schem% &7already exists in public!'
+  private:
+    success: '%pre%Successfully saved as &1%schem%&7!'
+    exists: '%pre%&1%schem% &7already exists! Delete it first!'
+delete:
+  public:
+    success: '%pre%Deleted public &1%schem%&7!'
+    alreadyDeleted: '%pre%&1%schem% public &7has already been deleted!'
+  private:
+    success: '%pre%Deleted &1%schem%&7!'
+    alreadyDeleted: '%pre%&1%schem% &7has already been deleted!'
+paste:
+  public:
+    success: '%pre%Pasted &1%schem%&7!'
+    notFound: '%pre%Could not find schematic!'
+  private:
+    success: '%pre%Pasted &1%schem%&7!'
+    notFound: '%pre%Could not find schematic!'
+list:
+  firstLinePublic: '%pre%Public Schematics:'
+  firstLine: '%pre%Your Schematics&8:'
+  otherLines: '&1%count%&7! &1%schem%&7!'
+  noneFound: '%pre%No schematics found!'
+other:
+  clipboardEmpty: '%pre%Clipboard empty! Use //copy to save to clipboard'
+  toolGive: '%pre%Use given tool to make selection!'
+  atSaveLimit: '%pre%You can only have %savelimit% saves at a time!'
+  overSaveLimit: '%pre%You can only save schematics under %blocklimit% blocks'
+  overPasteLimit: '%pre%You can only paste schematics under %blocklimit% blocks'

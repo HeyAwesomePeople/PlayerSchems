@@ -1,0 +1,7 @@
+name: PlayerSchems
+main: me.HeyAwesomePeople.playerschems.PlayerSchems
+version: 1.0
+commands:
+  playerschems:
+    aliases: [schems, ps]
+    description: Main command

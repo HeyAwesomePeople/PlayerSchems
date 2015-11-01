@@ -1,0 +1,19 @@
+Permissions:
+
+Private Permissions:
+    playerschems.save
+      playerschems.save.limit.vip
+    playerschems.paste
+    playerschems.tool
+    playerschems.delete
+    playerschems.list
+
+Public Permissions:
+    playerschems.save.public
+        playerschems.save.public.limit.vip
+    playerschems.paste.public
+        playerschems.paste.public.SCHEMNAME - Allows pasting of a locked public schematic(Lock schems in config)
+    playerschems.delete.public.own
+    playerschems.delete.public
+    playerschems.list.public
+

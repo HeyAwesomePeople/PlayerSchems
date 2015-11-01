@@ -1,19 +1,26 @@
+lockedSchems:
+- 'BigCock'
+- 'BossCanIHasThePussyPlease'
 limiter:
   default: 1
   vip: 5
+  vip+: 10
 blockSaveLimit: 50000
 prefix: '&8[&1&lSchems&8]&7 '
 save:
   public:
     success: '%pre%Successfully saved publically as &1%schem%&7!'
     exists: '%pre%&1%schem% &7already exists in public!'
+    limit: '%pre%&8You cannot save more than %savelimit%!'
   private:
     success: '%pre%Successfully saved as &1%schem%&7!'
     exists: '%pre%&1%schem% &7already exists! Delete it first!'
+    limit: '%pre%&8You cannot save more than %savelimit%!'
 delete:
   public:
     success: '%pre%Deleted public &1%schem%&7!'
     alreadyDeleted: '%pre%&1%schem% public &7has already been deleted!'
+    noPerm: '%pre%No permissions'
   private:
     success: '%pre%Deleted &1%schem%&7!'
     alreadyDeleted: '%pre%&1%schem% &7has already been deleted!'
@@ -21,10 +28,12 @@ paste:
   public:
     success: '%pre%Pasted &1%schem%&7!'
     notFound: '%pre%Could not find schematic!'
+    noPerm: '%pre%No permissions!'
   private:
     success: '%pre%Pasted &1%schem%&7!'
     notFound: '%pre%Could not find schematic!'
 list:
+  pagesWarning: '%pre%Use /ps list <page> to search pages'
   firstLinePublic: '%pre%Public Schematics:'
   firstLine: '%pre%Your Schematics&8:'
   otherLines: '&1%count%&7! &1%schem%&7!'

@@ -2,6 +2,8 @@ package me.HeyAwesomePeople.playerschems;
 
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import me.HeyAwesomePeople.playerschems.schematic.PrivateSchematics;
+import me.HeyAwesomePeople.playerschems.schematic.PublicSchematics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,7 +19,10 @@ import java.io.IOException;
 public class PlayerSchems extends JavaPlugin implements CommandExecutor {
     public static PlayerSchems instance;
 
-    private SchemsConfig schemsConfig;
+    public PublicSchematics publicSchems;
+    public PrivateSchematics privateSchematics;
+
+    public SchemsConfig schemsConfig;
     public Schematics schems;
 
     private File fileconfig = new File(this.getDataFolder() + File.separator + "config.yml");
@@ -28,11 +33,6 @@ public class PlayerSchems extends JavaPlugin implements CommandExecutor {
     @Override
     public void onEnable() {
         instance = this;
-
-        wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-        if (wep == null) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[Schems] Worldedit not found! This plugin will not work!");
-        }
         if (!fileconfig.exists()) {
             this.saveDefaultConfig();
         }
@@ -44,7 +44,16 @@ public class PlayerSchems extends JavaPlugin implements CommandExecutor {
             }
         }
 
+        wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+        if (wep == null) {
+            Bukkit.getConsoleSender().sendMessage(prefix() + ChatColor.RED + "[Schems] WorldEdit not found! This plugin will not work and will now shut down!");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+
+        publicSchems = new PublicSchematics();
+        privateSchematics = new PrivateSchematics();
         schems = new Schematics();
+        schemsConfig = new SchemsConfig();
     }
 
     public String prefix() {
@@ -68,9 +77,9 @@ public class PlayerSchems extends JavaPlugin implements CommandExecutor {
                 p.sendMessage(ChatColor.RED + "=== Player Schematics ===");
                 p.sendMessage(ChatColor.AQUA + "/ps tool - Get a tool to select the schematic");
                 p.sendMessage(ChatColor.AQUA + "/ps save <name> [-public] - Save the selected schematic [Save public schematic]");
-                p.sendMessage(ChatColor.AQUA + "/ps list <page> [-public] - List your schematics [List public schematics]");
+                p.sendMessage(ChatColor.AQUA + "/ps list [page] [-public] - List your schematics [List public schematics]");
                 p.sendMessage(ChatColor.AQUA + "/ps paste <name> [-public] - Paste loaded schematic [Paste public schematic]");
-                p.sendMessage(ChatColor.AQUA + "/ps delete <name> - Delete one of your schematics");
+                p.sendMessage(ChatColor.AQUA + "/ps delete <name> [-public] - Delete one of your schematics [Delete public schematic]");
                 return false;
             } else {
                 if (args[0].equalsIgnoreCase("reload")) {
@@ -93,39 +102,84 @@ public class PlayerSchems extends JavaPlugin implements CommandExecutor {
                         return false;
                     }
                     if (args.length == 3) {
-                        schems.listSchems(p, args[2].equalsIgnoreCase("-public"));
+                        if (args[2].equalsIgnoreCase("-public")) {
+                            if (!p.hasPermission("playerschems.list.public")) {
+                                p.sendMessage(prefix() + ChatColor.RED + "No permission");
+                                return false;
+                            }
+                            publicSchems.list(p, Integer.parseInt(args[1]));
+                        } else {
+                            privateSchematics.list(p, Integer.parseInt(args[1]));
+                        }
+                    } else if (args.length == 2) {
+                        if (args[1].equalsIgnoreCase("-public")) {
+                            if (!p.hasPermission("playerschems.list.public")) {
+                                p.sendMessage(prefix() + ChatColor.RED + "No permission");
+                                return false;
+                            }
+                            publicSchems.list(p, 1);
+                        } else {
+                            privateSchematics.list(p, Integer.parseInt(args[1]));
+                        }
                     } else {
-                        schems.listSchems(p, false);
+                        privateSchematics.list(p, 1);
                     }
                 } else if (args[0].equalsIgnoreCase("save")) {
                     if (!p.hasPermission("playerschems.save")) {
                         p.sendMessage(prefix() + ChatColor.RED + "No permission");
                         return false;
                     }
+                    if (args.length == 1) return false;
                     if (args.length == 3) {
-                        Schematic.save(p, args[1], args[2].equalsIgnoreCase("-public"));
-                    } else {
-                        if (schems.howManySchems(p) >= getLimit(p)) {
-                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', getConfig().getString("other.atSaveLimit").replace("%pre%", prefix()).replace("%savelimit%", getLimit(p) + "")));
-                            return false;
+                        if (args[2].equalsIgnoreCase("-public")) {
+                            if (!p.hasPermission("playerschems.save.public")) {
+                                p.sendMessage(prefix() + ChatColor.RED + "No permission");
+                                return false;
+                            }
+                            publicSchems.save(p, args[1]);
+                        } else {
+                            privateSchematics.save(p, args[1]);
                         }
-                        Schematic.save(p, args[1], false);
+                    } else {
+                        privateSchematics.save(p, args[1]);
                     }
                 } else if (args[0].equalsIgnoreCase("delete")) {
                     if (!p.hasPermission("playerschems.delete")) {
                         p.sendMessage(prefix() + ChatColor.RED + "No permission");
                         return false;
                     }
-                    schems.deleteSchem(p, args[1]);
+                    if (args.length == 1) return false;
+                    if (args.length == 3) {
+                        if (args[2].equalsIgnoreCase("-public")) {
+                            if (!p.hasPermission("playerschems.delete.public")) {
+                                p.sendMessage(prefix() + ChatColor.RED + "No permission");
+                                return false;
+                            }
+                            publicSchems.delete(p, args[1]);
+                        } else {
+                            privateSchematics.delete(p, args[1]);
+                        }
+                    } else {
+                        privateSchematics.delete(p, args[1]);
+                    }
                 } else if (args[0].equalsIgnoreCase("paste")) {
                     if (!p.hasPermission("playerschems.paste")) {
                         p.sendMessage(prefix() + ChatColor.RED + "No permission");
                         return false;
                     }
+                    if (args.length == 1) return false;
                     if (args.length == 3) {
-                        Schematic.paste(p, args[1], args[2].equalsIgnoreCase("-public"));
+                        if (args[2].equalsIgnoreCase("-public")) {
+                            if (!p.hasPermission("playerschems.paste.public")) {
+                                p.sendMessage(prefix() + ChatColor.RED + "No permission");
+                                return false;
+                            }
+                            publicSchems.paste(p, args[1]);
+                        } else {
+                            privateSchematics.paste(p, args[1]);
+                        }
                     } else {
-                        Schematic.paste(p, args[1], false);
+                        privateSchematics.paste(p, args[1]);
                     }
                 } else {
                     p.sendMessage(prefix() + ChatColor.RED + "Subcommand does not exist.");
@@ -133,17 +187,6 @@ public class PlayerSchems extends JavaPlugin implements CommandExecutor {
             }
         }
         return false;
-    }
-
-
-    public Integer getLimit(Player p) {
-        int limit = 1;
-        for (String s : getConfig().getConfigurationSection("limiter").getKeys(false)) {
-            if (p.hasPermission("playerschems.limiter." + s)) {
-                limit = getConfig().getInt("limiter." + s);
-            }
-        }
-        return limit;
     }
 
 

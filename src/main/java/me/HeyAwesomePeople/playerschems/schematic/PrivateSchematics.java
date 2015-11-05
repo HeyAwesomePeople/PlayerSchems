@@ -22,13 +22,13 @@ public class PrivateSchematics {
     }
 
     public String getString(String s) {
-        return ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString(s)).replace("%pre%", plugin.prefix());
+        return ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString(s).replace("%pre%", plugin.prefix()));
     }
 
     public void save(Player player, String schematicName) {
         try {
             if (canPlayerUpload(player)) {
-                player.sendMessage(getString("save.private.limit").replace("%schem%", schematicName.toLowerCase()).replace("%savelimit%", "" + playerMaxPublicUploads(player)));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("save.private.limit").replace("%schem%", schematicName.toLowerCase()).replace("%savelimit%", "" + playerMaxPublicUploads(player))));
                 return;
             }
 
@@ -37,7 +37,7 @@ public class PrivateSchematics {
             File sch = new File(plugin.getDataFolder(), "/schematics/" + player.getName() + "/" + schematicName.toLowerCase() + ".schematic");
 
             if (sch.exists()) {
-                player.sendMessage(getString("save.private.exists").replace("%schem%", schematicName.toLowerCase()));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("save.private.exists").replace("%schem%", schematicName.toLowerCase())));
                 return;
             }
 
@@ -61,13 +61,13 @@ public class PrivateSchematics {
             clipboard.copy(editSession);
             SchematicFormat.MCEDIT.save(clipboard, sch);
             editSession.flushQueue();
-            player.sendMessage(getString("save.private.success").replace("%schem%", schematicName.toLowerCase()));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("save.private.success").replace("%schem%", schematicName.toLowerCase())));
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (DataException e) {
             e.printStackTrace();
         } catch (EmptyClipboardException e) {
-            player.sendMessage(getString("other.clipboardEmpty").replace("%schem%", schematicName.toLowerCase()));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("other.clipboardEmpty").replace("%schem%", schematicName.toLowerCase())));
         }
     }
 
@@ -75,7 +75,7 @@ public class PrivateSchematics {
         try {
             File dir = new File(plugin.getDataFolder(), "/schematics/" + p.getName() + "/");
             if (dir.listFiles() == null) {
-                p.sendMessage(getString("paste.private.notFound").replace("%schem%", schematicName.toLowerCase()));
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("paste.private.notFound").replace("%schem%", schematicName.toLowerCase())));
                 return;
             }
 
@@ -89,7 +89,7 @@ public class PrivateSchematics {
             }
 
             if (!s) {
-                p.sendMessage(getString("paste.private.notFound").replace("%schem%", schematicName.toLowerCase()));
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("paste.private.notFound").replace("%schem%", schematicName.toLowerCase())));
                 return;
             }
 
@@ -106,12 +106,12 @@ public class PrivateSchematics {
 
             clipboard.paste(editSession, BukkitUtil.toVector(p.getLocation()), true);
 
-            p.sendMessage(getString("paste.private.success").replace("%schem%", schematicName.toLowerCase()));
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("paste.private.success").replace("%schem%", schematicName.toLowerCase())));
             editSession.flushQueue();
         } catch (DataException ex) {
             ex.printStackTrace();
         } catch (MaxChangedBlocksException e) {
-            p.sendMessage(getString("other.overSaveLimit").replace("%schem%", schematicName.toLowerCase()).replace("%blocklimit%", "" + plugin.getConfig().getInt("blockSaveLimit")));
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', getString("other.overSaveLimit").replace("%schem%", schematicName.toLowerCase()).replace("%blocklimit%", "" + plugin.getConfig().getInt("blockSaveLimit"))));
         } catch (IOException e) {
             e.printStackTrace();
         }
